@@ -13,7 +13,7 @@ export class App extends Component {
   //create api for read information//
     async  componentDidMount(){
       this.setState({loading:true});
-      const res = await axios.get('https://api.github.com/users')
+      const res = await axios.get(`https://api.github.com/users?client_id=${process.env.REACT_APP_CLIENT_ID}&client_sectet=${process.env.REACT_APP_CLIENT_SECRET}`)
       this.setState({users:res.data,loading:false});
   
 
