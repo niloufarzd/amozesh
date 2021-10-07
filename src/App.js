@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { useState, Fragment } from 'react'
 import './App.css';
 import Navbar from './Component/Navbar';
 import Users from './Component/Users';
@@ -8,60 +8,57 @@ import Alert  from './Component/Alert';
 import About from './Component/Layout/About';
 import User from './Component/User';
  import { BrowserRouter as Router,Route ,Switch} from 'react-router-dom';
-export class App extends Component {
-  
-  
-  state={ 
-    users:[],
-    repos:[],
-    user:{},
-    loading:false,
-    alert:null
+const  App  =()=> {
+   const [users,setUsers]=useState([]);
+   const [user,setUser]=useState({});
+   const [repos,setRepos]=useState([]);
+   const [loading,setLoading]=useState(false);
+   const [alert,setAlert]=useState(null);
 
-  };
   
-  search = async text =>{
-    this.setState({loading:true});
+   const search = async text =>{
+    setLoading(true);
     const res = await axios.get
     (`https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_CLIENT_ID}&client_sectet=${process.env.REACT_APP_CLIENT_SECRET}`
 
   );
+  setLoading(false);
+  setUsers(res.data.items);
 
-    this.setState({users: res.data.items,loading:false});
   };
-  getUser = async username =>{
-    this.setState({loading:true});
+   const getUser = async username =>{
+    setLoading(true);
     const res = await axios.get
     (`https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_CLIENT_ID}&client_sectet=${process.env.REACT_APP_CLIENT_SECRET}`
 
   );
 
-    this.setState({user: res.data,loading:false});
-  };
-  getUserRepose = async username =>{
-    this.setState({loading:true});
-    const res = await axios.get
+  setLoading(false);
+  setUser(res.data); 
+ };
+ const getUserRepose = async username =>{
+    setLoading(true);
+
+  const res = await axios.get
     (`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_CLIENT_ID}&client_sectet=${process.env.REACT_APP_CLIENT_SECRET}`
 
   );
+  setLoading(false);
+  setRepos(res.data); 
 
-    this.setState({repos: res.data,loading:false});
+};
+   const clearUser =()=>{
+  setUsers([]);
+ setLoading(false);
+
   };
-  clearUser =()=>{
-    this.setState({users: [],loading:false});
-
-
-  }
-  setAlert =(msg,type)=>{
-    this.setState({alert:{message:msg,type:type}});
+   const showAlert =(msg,type)=>{
+      setAlert({message:msg,type:type})
     setTimeout(() => {
-      this.setState({alert:null});
-      
+      setAlert(null)      
     }, 3000);
 
   };
-  render() {
-    const  {user ,users,loading,repos}=this.state;
 
     return (
       <Router>
@@ -69,14 +66,14 @@ export class App extends Component {
       <Navbar>
       </Navbar>
       <div className="container">
-        <Alert alert={this.state.alert}></Alert>
+        <Alert alert={alert}></Alert>
         <Switch>
          <Route exact path='/' render={()=>
          <Fragment>
-            <Search searchUsers={this.search}
-         clearUsers={this.clearUser}
-        showClear={this.state.users.length>0} 
-        setAlert={this.setAlert}></Search>
+            <Search searchUsers={search}
+         clearUsers={clearUser}
+        showClear={users.length>0} 
+        setAlert={showAlert}></Search>
          <Users users={users} loading={loading}></Users>
          </Fragment>
 
@@ -88,7 +85,7 @@ export class App extends Component {
         render={props=>(
           <User    
         {...props}
-          getUser={this.getUser}  getUserRepose={this.getUserRepose}loading={loading} user={user}  repos={repos}></User>
+          getUser={getUser}  getUserRepose={getUserRepose}loading={loading} user={user}  repos={repos}></User>
         )}></Route>
 
     
@@ -97,7 +94,7 @@ export class App extends Component {
       </div> 
       </Router>
     );
-    }
+    
   }
 
 

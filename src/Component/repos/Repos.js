@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
  const Repos = ({repos}) => {
     return ( repos.map(repo =>
-        <Repoitem repo={repo}></Repoitem>
+        <Repoitem key={repo.id} repo={repo}></Repoitem>
         )
       
     )
