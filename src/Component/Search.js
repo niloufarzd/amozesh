@@ -1,38 +1,30 @@
-import React, { Component } from 'react'
+import React, {useState}from 'react'
 import PropTypes from 'prop-types';
 
- class Search extends Component {
-     state={
-         text:''
-        }
+ const Search  =({setAlert,searchUsers,clearUsers,showClear})=> {
+    const [text,setText]=useState('');
 
-    static propTypes={
-        searchUsers:PropTypes.func.isRequired,
-        showClear:PropTypes.func.isRequired,
-        clearUsers:PropTypes.bool.isRequired,
-        setAlert:PropTypes.func.isRequired
-
-    };
-    onChange = e=> this.setState({[e.target.name]:e.target.value});
-    onsubmit = e=>{
+    
+     const onChange = e=> setText(e.target.value);
+     const onsubmit = e=>{
         e.preventDefault();
-        if(this.state.text === ''){
+        if(text === ''){
 
-            this.props.setAlert('please enter somethings','light')
+            setAlert('please enter somethings','light')
         }
        
         else{
-            this.props.searchUsers(this.state.text);
+            searchUsers(text);
+            setText('');
         }
       
     };
-    render() {
-        const {showClear,clearUsers}=this.props;
+    
         return (
             <div>
-                <form   onSubmit={this.onsubmit} className="form">
+                <form   onSubmit={onsubmit} className="form">
                     <input type="text" className="bg-white btn-block my-2" name="text" placeholder="search users" 
-                     onChange={this.onChange} value={this.state.text}
+                     onChange={onChange} value={text}
                      >
                     </input>
                     <input type="submit" value="search"  className="btn btn-dark btn-block"></input>
@@ -41,8 +33,17 @@ import PropTypes from 'prop-types';
                    <button className="btn btn-light  btn-block" onClick={clearUsers}>clear</button>
                             }
             </div>
-        )
-    }
-}
+        );
+
+ };
+    
+                        
+Search.propTypes={
+    searchUsers:PropTypes.func.isRequired,
+    showClear:PropTypes.func.isRequired,
+    clearUsers:PropTypes.bool.isRequired,
+    setAlert:PropTypes.func.isRequired
+
+};
 
 export default Search
